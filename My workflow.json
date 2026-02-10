@@ -1,0 +1,318 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data }}",
+        "options": {
+          "systemMessage": "Ты должен найти новости, которые содержат слово \"Россия\" или \"РФ\" и рассортировать статьи по блокам (\"Наука\", \"Здравоохранения\", \"Политика\", \"Образование\").\nВыведи следующую статистику:\n1) Итоговое количество статей.\n2) Какой блок набрал самое большое суммарное количество просмотров.\n3) В каком блоке больше всего статей."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        128,
+        176
+      ],
+      "id": "ab746bf1-4ded-4ef6-9a37-84b2b4a1cf14",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        176
+      ],
+      "id": "2348657a-2fd6-410f-b06b-bafc647bdc25",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://ria.ru/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -400,
+        -192
+      ],
+      "id": "380f360a-9fdd-49fa-8b65-78e18294fdf1",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "url": "https://www.rbc.ru/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -400,
+        0
+      ],
+      "id": "e982177a-e00d-464e-a03a-0c176c4e2157",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "url": "https://dzen.ru/news",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -400,
+        176
+      ],
+      "id": "a19de4c2-6e22-4e08-933c-615a073ba23a",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "url": "https://lenta.ru/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -400,
+        352
+      ],
+      "id": "8e832879-af61-4c0b-b024-0c46eb2ed38c",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "url": "https://ren.tv/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -400,
+        512
+      ],
+      "id": "501c94c7-b446-4eb9-9065-7c92ca88c0bf",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "numberInputs": 5
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -192,
+        128
+      ],
+      "id": "4c9f1c9b-807b-49de-a7e3-b590674480b8",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -16,
+        176
+      ],
+      "id": "2b27766d-e996-469d-9483-3a367a70b648",
+      "name": "Wait",
+      "webhookId": "61fe5864-ec05-4ece-84f0-925216d71815"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        384
+      ],
+      "id": "586153bf-437b-462b-97b2-155501d28341",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "nXRDmSM7NPBRTHiZ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1832461017",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        432,
+        176
+      ],
+      "id": "6c317d39-74b9-4010-be91-4d0f7f3860bb",
+      "name": "Send a text message",
+      "webhookId": "9f8cad27-99ef-4da6-bb1c-3cc320e5e511",
+      "notesInFlow": false,
+      "credentials": {
+        "telegramApi": {
+          "id": "rjxJWYtKWc1X4gRr",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d7a40f41-bf72-45f5-b89b-3c1270cf3adb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d669ffe6566194a1203fad1f18dfd94b91043fe34dd1c7ab40c6966386e3789d"
+  },
+  "id": "6JrWyMcSv3aXYqpu",
+  "tags": []
+}
